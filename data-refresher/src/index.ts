@@ -35,7 +35,7 @@ const getData = async (): Promise<Row[]> => {
     return rows.map((row) => rowSchema.parse({ date: new Date(row.Time), capacity: Number(row.Capacity) }));
 };
 
-const SAVE_FILE_LOCATION = "../frontend/public/data.json";
+const SAVE_FILE_LOCATION = "../frontend/src/assets/data.json";
 
 getData().then((rows) => {
     console.log("Got data", rows);
