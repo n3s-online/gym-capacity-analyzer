@@ -1,16 +1,21 @@
 import { CategoryBar, Card, Flex, Text } from "@tremor/react";
+import { GymCapacityRow } from "../App";
 
-export default () => (
-    <>
+interface Props {
+    row: GymCapacityRow;
+}
+
+export default ({ row }: Props) => (
+    <Card>
         <Flex>
-            <Text>Rating Product A</Text>
-            <Text>62%</Text>
+            <Text>Current Capacity</Text>
+            <Text>{row.capacity}%</Text>
         </Flex>
         <CategoryBar
-            values={[40, 30, 20, 10]}
+            values={[10, 10, 10, 10, 60]}
             colors={["emerald", "yellow", "orange", "rose"]}
-            markerValue={62}
+            markerValue={row.capacity}
             className="mt-3"
         />
-    </>
+    </Card>
 );
