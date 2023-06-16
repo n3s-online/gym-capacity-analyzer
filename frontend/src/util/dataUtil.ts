@@ -32,7 +32,7 @@ export const aggregateCapacityByTimeOfDay = (rows: GymCapacityRowTransformed[]):
         return ({
             timeOfDay,
             dateString: rowsAtTimeOfDay[0].dateString,
-            capacity: averageCapacity
+            capacity: Math.round(averageCapacity * 100) / 100
         });
     });
     // sort by time of day
