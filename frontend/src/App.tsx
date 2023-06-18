@@ -7,6 +7,7 @@ import * as z from "zod";
 import data from "./assets/data.json";
 import { RowFilter, addFields, averageCapacity, combineCapacityData, getMostRecentGymCapacity, getSortedTimeDisplayStringsThatExistInData } from './util/dataUtil';
 import CapacityLineChart from './graphics/CapacityLineChart';
+import GymHoursBar from './graphics/GymHoursBar';
 
 const dataSchema = z.array(
   z.object({
@@ -48,6 +49,7 @@ function App() {
     <Grid numItems={1} numItemsSm={2} numItemsLg={3} className="gap-2 p-5">
       <CurrentCapacity row={mostRecentRow} />
       <CapacityBar row={mostRecentRow} />
+      <GymHoursBar dayOfWeekName={mostRecentRowDayOfWeekName} mostRecentRow={mostRecentRow} />
       <Col numColSpanSm={1} numColSpanMd={2} numColSpanLg={3} >
         <CapacityLineChart data={lineGraphData} />
       </Col>

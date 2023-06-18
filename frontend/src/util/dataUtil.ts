@@ -24,6 +24,7 @@ export const getSortedTimeDisplayStringsThatExistInData = <T extends {}>(data: T
 }
 
 const dayOfWeekNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
+export type DayOfWeekName = typeof dayOfWeekNames[number];
 export const addFields = (rows: GymCapacityRow[]) => {
     const transformedRows = rows.map(row => {
         const minutesRounded = Math.round(row.date.getMinutes() / 15) * 15;
