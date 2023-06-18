@@ -38,11 +38,11 @@ const allTimeAverageDayOfWeek = averageCapacity(parsedData, mostRecentRowDayOfWe
 const lineGraphData = combineCapacityData({ data: mostRecentDayCapacity, key: "Today" }, { data: allTimeAverage, key: "Average" }, { data: allTimeAverageDayOfWeek, key: `Average ${mostRecentRowDayOfWeekName}` });
 
 // Visuals to do:
-// 1. Add day of week average to line chart
-// 2. Add day of week average to bar chart
-// 3. Add average capacity for current time on current day to current capacity slider and card
-// 4. Add delta from current capacity to recent capacity (maybe average the last 3 entries)
-// 5. Add DeltaBar for current capacity delta from average capacity for current time on current day
+// - Add day of week average to bar chart
+// - Add average capacity for current time on current day to current capacity slider and card
+// - Add delta from current capacity to recent capacity (maybe average the last 3 entries)
+// - Add DeltaBar for current capacity delta from average capacity for current time on current day
+// - maybe add max/min/p90 to line chart
 
 function App() {
   return (
