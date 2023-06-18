@@ -1,5 +1,6 @@
 import { Card, Title, LineChart } from "@tremor/react";
 import { CombinedCapacityData } from "../util/dataUtil";
+import { colorContrastArray } from "../util/colorUtil";
 
 interface Props {
     data: CombinedCapacityData[];
@@ -18,7 +19,7 @@ export default ({ data }: Props) => {
                 className="mt-6"
                 data={rowsWithLabels}
                 index="timeDisplayString"
-                colors={["red", "blue", "green", "purple", "pink", "indigo", "yellow", "teal", "orange"]}
+                colors={colorContrastArray}
                 categories={keys}
                 yAxisWidth={40}
             />
