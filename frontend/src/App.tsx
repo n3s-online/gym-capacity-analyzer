@@ -50,7 +50,7 @@ function App() {
       <MostRecentCapacityDate row={mostRecentRow} />
       <CurrentCapacity row={mostRecentRow} />
       <CapacityBar row={mostRecentRow} />
-      <Col numColSpan={3}>
+      <Col numColSpanSm={1} numColSpanMd={2} numColSpanLg={3} >
         <CapacityLineChart data={lineGraphData} />
       </Col>
       <Card>
