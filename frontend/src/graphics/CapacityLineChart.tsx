@@ -1,15 +1,15 @@
 import { Card, Title, LineChart } from "@tremor/react";
-import { AggregatedGymCapacityRow, AggregatedGymCapacityRowWithDay, GymCapacityRow } from "../App";
+import { GymCapacityRowTransformedWithAverage } from "../App";
 
 interface Props {
-    rows: AggregatedGymCapacityRowWithDay[];
+    rows: GymCapacityRowTransformedWithAverage[];
 }
 
 export default ({ rows }: Props) => {
     const rowsWithLabels = rows.map((row) => ({
         ...row,
-        "Todays Capacity": row.dayCapacity,
-        "Average Capacity": row.capacity,
+        "Todays Capacity": row.rowCapacity,
+        "Average Capacity": row.averageCapacity,
     }));
     return (
         <Card>
@@ -17,7 +17,7 @@ export default ({ rows }: Props) => {
             <LineChart
                 className="mt-6"
                 data={rowsWithLabels}
-                index="dateString"
+                index="timeDisplayString"
                 categories={["Average Capacity", "Todays Capacity"]}
                 colors={["emerald", "blue"]}
                 yAxisWidth={40}

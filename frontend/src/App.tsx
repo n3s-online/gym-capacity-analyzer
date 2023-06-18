@@ -5,7 +5,7 @@ import CurrentCapacity from './graphics/CurrentCapacity';
 import * as z from "zod";
 
 import data from "./assets/data.json";
-import { addDaysCapacityToAggregatedRows, addFields, aggregateCapacityByTimeOfDay, getMostRecentGymCapacity } from './util/dataUtil';
+import { addFields, averageCapacity, combineCapacityData, getMostRecentGymCapacity } from './util/dataUtil';
 import MostRecentCapacityDate from './graphics/MostRecentCapacityDate';
 import CapacityLineChart from './graphics/CapacityLineChart';
 
@@ -18,20 +18,14 @@ const dataSchema = z.array(
 
 export type GymCapacityRow = z.infer<typeof dataSchema>[number];
 
-export type GymCapacityRowTransformed = GymCapacityRow & {
-  timeOfDay: string;
-  dateString: string;
-}
-
-export type AggregatedGymCapacityRow = Omit<GymCapacityRowTransformed, "date">;
-export type AggregatedGymCapacityRowWithDay = AggregatedGymCapacityRow & { dayCapacity?: number };
+export type GymCapacityRowTransformed = ReturnType<typeof addFields>[number];
+export type GymCapacityRowTransformedWithAverage = ReturnType<typeof combineCapacityData>[number];
 
 const parsedData = addFields(dataSchema.parse(data));
 const mostRecentRow = getMostRecentGymCapacity(parsedData);
 const mostRecentDayRows = parsedData.filter(row => row.date.getDate() === mostRecentRow.date.getDate() && row.date.getMonth() === mostRecentRow.date.getMonth() && row.date.getFullYear() === mostRecentRow.date.getFullYear());
-const averageRows = aggregateCapacityByTimeOfDay(parsedData);
-
-const todaysDaysWithAverageRows = addDaysCapacityToAggregatedRows(averageRows, mostRecentDayRows);
+const allTimeAverage = averageCapacity(parsedData);
+const mostRecentDayRowsWithAverage = combineCapacityData(mostRecentDayRows, allTimeAverage)
 
 // Visuals to do:
 // 1. Add day of week average to line chart
@@ -47,7 +41,7 @@ function App() {
       <CurrentCapacity row={mostRecentRow} />
       <CapacityBar row={mostRecentRow} />
       <Col numColSpan={3}>
-        <CapacityLineChart rows={todaysDaysWithAverageRows} />
+        <CapacityLineChart rows={mostRecentDayRowsWithAverage} />
       </Col>
       <Card>
         <Text>Title</Text>
