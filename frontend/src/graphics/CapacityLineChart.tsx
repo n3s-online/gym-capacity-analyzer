@@ -13,7 +13,7 @@ export default ({ data }: Props) => {
     }));
     return (
         <Card>
-            <Title>Today's Capacity</Title>
+            <Title>Daily Capacity</Title>
             <LineChart
                 className="mt-6"
                 data={rowsWithLabels}
