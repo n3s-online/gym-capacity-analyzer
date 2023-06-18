@@ -1,7 +1,7 @@
-import { GymCapacityRow, GymCapacityRowTransformed } from "../App";
+import { GymCapacityRow, GymCapacityRowTransformed, allTimeSortedKeys } from "../App";
 import { getDateHhMm } from "./dateUtil";
 
-export const getMostRecentGymCapacity = (rows: GymCapacityRow[]): GymCapacityRow => {
+export const getMostRecentGymCapacity = (rows: GymCapacityRowTransformed[]): GymCapacityRowTransformed => {
     return rows[rows.length - 1];
 }
 
@@ -19,7 +19,7 @@ const sortedTimeDisplayStrings = (() => {
     });
     return timeDisplayStrings;
 })();
-const getSortedTimeDisplayStringsThatExistInData = <T extends {}>(data: T) => {
+export const getSortedTimeDisplayStringsThatExistInData = <T extends {}>(data: T) => {
     return sortedTimeDisplayStrings.filter(timeDisplayString => timeDisplayString in data);
 }
 
@@ -42,10 +42,11 @@ export const addFields = (rows: GymCapacityRow[]) => {
     return transformedRows;
 }
 
-export type AggregatedCapacity = { [timeDisplayString: string]: number };
-type AggregatedCapacityAccumulator = { [timeDisplayString: string]: { count: number, capacity: number } };
+export type CapacityByTimeDisplayString = { [timeDisplayString: string]: number };
+type CapacityByTimeDisplayStringAccumulator = { [timeDisplayString: string]: { count: number, capacity: number } };
+export type RowFilter = (row: GymCapacityRowTransformed) => boolean;
 
-export const averageCapacity = (rows: GymCapacityRowTransformed[], rowFilter?: (row: GymCapacityRowTransformed) => boolean): AggregatedCapacity => {
+export const averageCapacity = (rows: GymCapacityRowTransformed[], rowFilter?: RowFilter): CapacityByTimeDisplayString => {
     const filteredRows: GymCapacityRowTransformed[] = !!rowFilter ? rows.filter(rowFilter) : rows;
     const aggregatedCapacity = filteredRows.reduce((acc, row) => {
         if (acc[row.timeDisplayString]) {
@@ -55,22 +56,27 @@ export const averageCapacity = (rows: GymCapacityRowTransformed[], rowFilter?: (
             acc[row.timeDisplayString] = { count: 1, capacity: row.capacity };
         }
         return acc;
-    }, {} as AggregatedCapacityAccumulator);
-    const averagedCapacity: AggregatedCapacity = {};
+    }, {} as CapacityByTimeDisplayStringAccumulator);
+    const averagedCapacity: CapacityByTimeDisplayString = {};
     Object.keys(aggregatedCapacity).forEach(timeDisplayString => {
         averagedCapacity[timeDisplayString] = Math.round(aggregatedCapacity[timeDisplayString].capacity / aggregatedCapacity[timeDisplayString].count * 100) / 100;
     });
     return averagedCapacity;
 }
 
-export const combineCapacityData = (rows: GymCapacityRowTransformed[], averageCapacity: AggregatedCapacity) => {
-    const sortedKeys = getSortedTimeDisplayStringsThatExistInData(averageCapacity);
-    const combinedCapacityData = sortedKeys.map(timeDisplayString => {
-        return {
-            timeDisplayString,
-            averageCapacity: averageCapacity[timeDisplayString],
-            rowCapacity: rows.find(row => row.timeDisplayString === timeDisplayString)?.capacity
-        }
+type CombinedCapacityProps = {
+    data: CapacityByTimeDisplayString;
+    key: string;
+}
+
+export const combineCapacityData = (...dataToCombine: CombinedCapacityProps[]) => {
+    const combinedCapacityData = allTimeSortedKeys.map(timeDisplayString => {
+        const combinedData = { timeDisplayString, keys: {} as { [key: string]: number } };
+        dataToCombine.forEach(({ data, key }) => {
+            combinedData.keys[key] = data[timeDisplayString];
+        });
+        return combinedData;
     });
     return combinedCapacityData;
 }
+export type CombinedCapacityData = ReturnType<typeof combineCapacityData>[number];

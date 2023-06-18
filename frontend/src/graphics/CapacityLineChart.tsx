@@ -1,15 +1,15 @@
 import { Card, Title, LineChart } from "@tremor/react";
-import { GymCapacityRowTransformedWithAverage } from "../App";
+import { CombinedCapacityData } from "../util/dataUtil";
 
 interface Props {
-    rows: GymCapacityRowTransformedWithAverage[];
+    data: CombinedCapacityData[];
 }
 
-export default ({ rows }: Props) => {
-    const rowsWithLabels = rows.map((row) => ({
-        ...row,
-        "Todays Capacity": row.rowCapacity,
-        "Average Capacity": row.averageCapacity,
+export default ({ data }: Props) => {
+    const keys = Object.keys(data[0].keys);
+    const rowsWithLabels = data.map((row) => ({
+        timeDisplayString: row.timeDisplayString,
+        ...row.keys
     }));
     return (
         <Card>
@@ -18,8 +18,8 @@ export default ({ rows }: Props) => {
                 className="mt-6"
                 data={rowsWithLabels}
                 index="timeDisplayString"
-                categories={["Average Capacity", "Todays Capacity"]}
-                colors={["emerald", "blue"]}
+                colors={["red", "blue", "green", "purple", "pink", "indigo", "yellow", "teal", "orange"]}
+                categories={keys}
                 yAxisWidth={40}
             />
         </Card>

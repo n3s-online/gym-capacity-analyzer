@@ -5,7 +5,7 @@ import CurrentCapacity from './graphics/CurrentCapacity';
 import * as z from "zod";
 
 import data from "./assets/data.json";
-import { addFields, averageCapacity, combineCapacityData, getMostRecentGymCapacity } from './util/dataUtil';
+import { RowFilter, addFields, averageCapacity, combineCapacityData, getMostRecentGymCapacity, getSortedTimeDisplayStringsThatExistInData } from './util/dataUtil';
 import MostRecentCapacityDate from './graphics/MostRecentCapacityDate';
 import CapacityLineChart from './graphics/CapacityLineChart';
 
@@ -22,10 +22,20 @@ export type GymCapacityRowTransformed = ReturnType<typeof addFields>[number];
 export type GymCapacityRowTransformedWithAverage = ReturnType<typeof combineCapacityData>[number];
 
 const parsedData = addFields(dataSchema.parse(data));
-const mostRecentRow = getMostRecentGymCapacity(parsedData);
-const mostRecentDayRows = parsedData.filter(row => row.date.getDate() === mostRecentRow.date.getDate() && row.date.getMonth() === mostRecentRow.date.getMonth() && row.date.getFullYear() === mostRecentRow.date.getFullYear());
+
 const allTimeAverage = averageCapacity(parsedData);
-const mostRecentDayRowsWithAverage = combineCapacityData(mostRecentDayRows, allTimeAverage)
+export const allTimeSortedKeys = getSortedTimeDisplayStringsThatExistInData(allTimeAverage);
+
+const mostRecentRow = getMostRecentGymCapacity(parsedData);
+const mostRecentRowDateFilter: RowFilter = (row) => row.date.getDate() === mostRecentRow.date.getDate() && row.date.getMonth() === mostRecentRow.date.getMonth() && row.date.getFullYear() === mostRecentRow.date.getFullYear();
+const mostRecentDayCapacity = averageCapacity(parsedData, mostRecentRowDateFilter);
+
+const mostRecentRowDayOfWeek = mostRecentRow.date.getDay();
+const mostRecentRowDayOfWeekName = mostRecentRow.parsedDateInfo.dayOfWeekName;
+const mostRecentRowDayOfWeekFilter: RowFilter = (row) => row.date.getDay() === mostRecentRowDayOfWeek;
+const allTimeAverageDayOfWeek = averageCapacity(parsedData, mostRecentRowDayOfWeekFilter);
+
+const lineGraphData = combineCapacityData({ data: mostRecentDayCapacity, key: "Today" }, { data: allTimeAverage, key: "Average" }, { data: allTimeAverageDayOfWeek, key: `Average ${mostRecentRowDayOfWeekName}` });
 
 // Visuals to do:
 // 1. Add day of week average to line chart
@@ -41,7 +51,7 @@ function App() {
       <CurrentCapacity row={mostRecentRow} />
       <CapacityBar row={mostRecentRow} />
       <Col numColSpan={3}>
-        <CapacityLineChart rows={mostRecentDayRowsWithAverage} />
+        <CapacityLineChart data={lineGraphData} />
       </Col>
       <Card>
         <Text>Title</Text>
